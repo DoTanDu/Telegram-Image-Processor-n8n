@@ -1,0 +1,168 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "9019b5ef-c099-4cec-bc79-5176d0bc0320",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        720,
+        64
+      ],
+      "typeVersion": 1,
+      "webhookId": "245dbbfe-b853-46a1-9d7c-66ad7f03d619",
+      "credentials": {
+        "telegramApi": {
+          "id": "yMBWdFQv6qtFKYfY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[0].file_id }}",
+        "additionalFields": {}
+      },
+      "id": "605a95a1-e024-41f4-a0c7-910597f33259",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        944,
+        64
+      ],
+      "typeVersion": 1,
+      "webhookId": "117efc13-d41f-4629-8b04-977afa3d54b9",
+      "credentials": {
+        "telegramApi": {
+          "id": "yMBWdFQv6qtFKYfY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Telegram Trigger').item.json.message.caption }}.png",
+        "driveId": "My Drive",
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "45e7c19d-8269-4bb1-81bf-64a54d69c01a",
+      "name": "Upload Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1392,
+        64
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "6aN801xGoDncKEyJ",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Xử lý ảnh thành công!\n\n📁 Tên file: {{ $('Upload Drive').item.json.name }}\n<a href=\"{{ $('Upload Drive').item.json.webViewLink }}\">Bấm vào đây để xem ảnh</a>",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "6b83365c-3a64-436d-9ffb-f510298ae79b",
+      "name": "Telegram Reply",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1616,
+        64
+      ],
+      "typeVersion": 1,
+      "webhookId": "94407369-0f10-4ae4-9995-d9530bb2225e",
+      "credentials": {
+        "telegramApi": {
+          "id": "yMBWdFQv6qtFKYfY",
+          "name": "Telegram account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "text": "={{ $('Telegram Trigger').item.json.message.caption.substring(0, 5) + \"...\" }}",
+        "fontSize": 20,
+        "lineLength": 800,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        64
+      ],
+      "id": "5e2fd611-4bc4-4434-a828-a4edb0d89468",
+      "name": "Edit Image"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Drive": {
+      "main": [
+        [
+          {
+            "node": "Telegram Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "Upload Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2957a6484ff840606dad6fe880a4d7f37a2f7ba834732c9a8e4b0923433b6f20"
+  }
+}
