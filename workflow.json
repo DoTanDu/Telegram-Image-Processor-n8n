@@ -25,28 +25,6 @@
     },
     {
       "parameters": {
-        "resource": "file",
-        "fileId": "={{ $json.message.photo[0].file_id }}",
-        "additionalFields": {}
-      },
-      "id": "605a95a1-e024-41f4-a0c7-910597f33259",
-      "name": "Download Image",
-      "type": "n8n-nodes-base.telegram",
-      "position": [
-        944,
-        64
-      ],
-      "typeVersion": 1,
-      "webhookId": "117efc13-d41f-4629-8b04-977afa3d54b9",
-      "credentials": {
-        "telegramApi": {
-          "id": "yMBWdFQv6qtFKYfY",
-          "name": "Telegram account 3"
-        }
-      }
-    },
-    {
-      "parameters": {
         "name": "={{ $('Telegram Trigger').item.json.message.caption }}.png",
         "driveId": "My Drive",
         "folderId": {
@@ -61,7 +39,7 @@
       "name": "Upload Drive",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        1392,
+        1600,
         64
       ],
       "typeVersion": 3,
@@ -84,7 +62,7 @@
       "name": "Telegram Reply",
       "type": "n8n-nodes-base.telegram",
       "position": [
-        1616,
+        1824,
         64
       ],
       "typeVersion": 1,
@@ -107,11 +85,39 @@
       "type": "n8n-nodes-base.editImage",
       "typeVersion": 1,
       "position": [
-        1168,
+        1376,
         64
       ],
       "id": "5e2fd611-4bc4-4434-a828-a4edb0d89468",
       "name": "Edit Image"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot8742559333:AAEpeJuFQcgJOBQLSiKomq07Swf_LW1APiU/getFile?file_id={{ $('Telegram Trigger').item.json.message.photo[1].file_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        64
+      ],
+      "id": "af301fdf-1e13-4f9c-8ba6-48e38bba0f60",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot8742559333:AAEpeJuFQcgJOBQLSiKomq07Swf_LW1APiU/{{ $json.result.file_path }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1136,
+        64
+      ],
+      "id": "6322a4ee-0a04-44bd-8553-e7b5a5aaa288",
+      "name": "HTTP Request1"
     }
   ],
   "connections": {
@@ -119,18 +125,7 @@
       "main": [
         [
           {
-            "node": "Download Image",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download Image": {
-      "main": [
-        [
-          {
-            "node": "Edit Image",
+            "node": "HTTP Request",
             "type": "main",
             "index": 0
           }
@@ -153,6 +148,28 @@
         [
           {
             "node": "Upload Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
             "type": "main",
             "index": 0
           }
